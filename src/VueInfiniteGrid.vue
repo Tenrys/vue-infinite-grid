@@ -12,52 +12,27 @@
         type: [String, Array]
       },
       layout: {
-        type: [String, Object]
+        type: String
       },
       layoutConfig: {
         type: Object
       },
-      tag: {
-        type: String
-      },
-      size: {
-        type: Number
-      },
-      outline: {
-        type: Array
-      },
       options: {
         type: Object
       },
-      horizontal: {
-        type: Boolean
-      },
-      isEqualSize: {
-        type: Boolean
-      },
-      isOverflowScroll: {
-        type: Boolean
-      }
     },
     data () {
       return {
-        id: Math.random().toString(36).substr(2, 10)
+        id: Math.random().toString(36).substr(2, 10),
+        infiniteGrid: null
       }
     },
     mounted () {
       var vm = this;
-      var ig = new InfiniteGrid(vm.$el, {
-        isOverflowScroll: vm.isOverflowScroll,
-        size: vm.size,
-        tag: vm.tag,
-        horizontal: vm.horizontal,
-        isEqualSize: vm.isEqualSize
-      });
+      vm.infiniteGrid = new InfiniteGrid(vm.$el, vm.options || {});
 
       this.$nextTick(() => {
-        ig.setLayout(JustifiedLayout, {
-          margin: vm.layoutConfig.margin
-        });
+        vm.infiniteGrid.setLayout(this.gridType || JustifiedLayout, vm.layoutConfig || []);
       })
     },
     computed: {
@@ -65,11 +40,18 @@
         return `grid_${this.id}`
       },
       gridType () {
-        return this.layout === 'JustifiedLayout' ? JustifiedLayout
-          : this.layout === 'FrameLayout' ? FrameLayout
-            : this.layout === 'SquareLayout' ? SquareLayout
-              : this.layout === 'PackingLayout' ? PackingLayout : GridLayout
-
+        switch (this.layout) {
+          case 'JustifiedLayout':
+            return JustifiedLayout
+          case 'FrameLayout':
+            return FrameLayout
+          case 'SquareLayout':
+            return SquareLayout
+          case 'PackingLayout':
+            return PackingLayout
+          case 'GridLayout':
+            return GridLayout
+        }
       }
     }
   }
